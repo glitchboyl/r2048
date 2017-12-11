@@ -1,0 +1,28 @@
+{
+  "name": "R2048",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "native start": "node node_modules/react-native/local-cli/cli.js start",
+    "native test": "jest",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "react": "16.0.0",
+    "react-dom": "^16.2.0",
+    "react-native": "0.51.0",
+    "react-scripts": "^1.0.17"
+  },
+  "devDependencies": {
+    "babel-jest": "21.2.0",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "21.2.1",
+    "react-test-renderer": "16.0.0"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
