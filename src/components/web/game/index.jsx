@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import Grid from './grid';
+import Gridiron from './gridiron';
 import TileContainer from './tile-container';
 
 export default class Game extends Component {
     render() {
         return (
             <div className="game-container">
-                <Grid></Grid>
+                <Gridiron></Gridiron>
                 <TileContainer></TileContainer>
             </div>
         )
