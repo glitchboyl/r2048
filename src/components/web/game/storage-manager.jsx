@@ -1,4 +1,4 @@
-export default class storageManager {
+class storageManager {
     constructor() {
         this.bestScoreKey = "bestScore";
         this.gameStateKey = "gameState";
@@ -39,3 +39,5 @@ export default class storageManager {
             .setItem(this.noticeClosedKey, noticeClosed.toString())
     }
 }
+
+export default new storageManager();

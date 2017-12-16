@@ -2,50 +2,94 @@ import React, {Component} from 'react';
 import Tile from './tile';
 import Grid from './grid';
 import Tiler from './tiler';
+import inputManager from './input-manager';
 import storageManager from './storage-manager';
-const storage = new storageManager();
 
 export default class TileContainer extends Component {
     constructor() {
         super();
         this.state = this.setup();
         this.startRandomTiles(this.state);
+        inputManager.on('move', this.move);
+        inputManager.on('restart', this.restart);
+        inputManager.on('keepPlaying', this.keepPlaying);
+        inputManager.listen();
     }
     setup = () => {
-        const prevState = storage.getGameState();
+        const prevState = storageManager.getGameState();
         const size = prevState
             ? prevState.grid.size
             : 4;
-        const startTiles = 2;
         const grid = prevState
             ? new Grid(size, prevState.grid.cells)
             : new Grid(size);
-        return {size, startTiles, grid}
+        return {size, grid, startTiles: 2}
     }
     startRandomTiles = ({startTiles, grid}) => {
         for (let i = 0; i < startTiles; i++) {
             grid.addRandomTile();
         }
     }
-    actuate = () => {
+    renderHandle = () => {
         const Tiles = [];
         this
             .state
             .grid
-            .eachCell((x, y, cell) => {
-                if (cell) 
+            .eachCell((x, y, tile) => {
+                if (tile) 
                     Tiles.push(
                         <Tile
-                            inner={cell.value}
-                            x={cell.x}
-                            y={cell.y}
-                            key={`${cell.x + 1}-${cell.y + 1}`}></Tile>
+                            inner={tile.value}
+                            x={tile.x}
+                            y={tile.y}
+                            key={`${tile.x + 1}-${tile.y + 1}`}></Tile>
                     )
             });
         return Tiles;
     }
+    prepareTiles = () => {
+        this
+            .state
+            .grid
+            .eachCell((x, y, tile) => {
+                if (tile) {
+                    tile.mergedFrom = null;
+                    tile.savePosition();
+                }
+            });
+    }
+    getVector = (direction) => {
+        // 0: up, 1: right, 2: down, 3: left
+        const map = {
+            0: {
+                x: 0,
+                y: -1
+            },
+            1: {
+                x: 1,
+                y: 0
+            },
+            2: {
+                x: 0,
+                y: 1
+            },
+            3: {
+                x: -1,
+                y: 0
+            }
+        }
+        return map[direction];
+    }
+    buildTraversals = (vector) => {}
+    move = (direction) => {
+        // 0: up, 1: right, 2: down, 3: left
+        const vector = this.getVector(direction);
+        const traversals = this.buildTraversals(vector);
+    }
+    restart = () => {}
+    keepPlaying = () => {}
     render() {
-        const Tiles = this.actuate();
+        const Tiles = this.renderHandle();
         return (
             <div className="tile-container">
                 {Tiles}
