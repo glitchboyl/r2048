@@ -78,6 +78,11 @@ export default class Grid {
     withinBounds({x, y}) {
         return x >= 0 && x < this.size && y >= 0 && y < this.size;
     }
+    cellContent({x, y}) {
+        return this.withinBounds({x, y})
+            ? this.cells[x][y]
+            : null;
+    }
     // Serialize state
     serialize() {
         const cells = [];
