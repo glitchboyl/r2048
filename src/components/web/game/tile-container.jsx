@@ -126,8 +126,35 @@ export default class TileContainer extends Component {
             .availableCells()
             .lengths || this.tileMatchesAvailable();
     }
+    mergeTiles = (tileOne, tileTwo) => {
+        const {grid} = this.state;
+        const merged = new Tiler({
+            x: tileTwo.x,
+            y: tileTwo.y
+        }, tileOne.value * 2);
+        merged.mergedFrom = [tileOne, tileTwo];
+        this
+            .tiles[`${tileOne.x}-${tileOne.y}`]
+            .classList
+            .remove(`tile-position-${tileOne.x + 1}-${tileOne.y + 1}`);
+        this
+            .tiles[`${tileOne.x}-${tileOne.y}`]
+            .classList
+            .add(`tile-position-${merged.x + 1}-${merged.y + 1}`);
+        grid.insertTile(merged);
+        grid.removeTile(tileOne);
+        tileOne.updatePosition({x: tileTwo.x, y: tileTwo.y});
+    }
     moveTile = (tile, cell) => {
         const {grid} = this.state;
+        this
+            .tiles[`${tile.x}-${tile.y}`]
+            .classList
+            .remove(`tile-position-${tile.x + 1}-${tile.y + 1}`);
+        this
+            .tiles[`${tile.x}-${tile.y}`]
+            .classList
+            .add(`tile-position-${cell.x + 1}-${cell.y + 1}`);
         grid.cells[tile.x][tile.y] = null;
         grid.cells[cell.x][cell.y] = tile;
         tile.updatePosition(cell);
@@ -153,11 +180,7 @@ export default class TileContainer extends Component {
                             const positions = this.findFarthestPosition(cell, vector);
                             const next = grid.cellContent(positions.next);
                             if (next && next.value === tile.value && !next.mergedFrom) {
-                                const merged = new Tiler(positions.next, tile.value * 2);
-                                merged.mergedFrom = [tile, next];
-                                grid.insertTile(merged);
-                                grid.removeTile(tile);
-                                tile.updatePosition(positions.next);
+                                this.mergeTiles(tile, next);
                             } else {
                                 this.moveTile(tile, positions.farthest);
                             }
@@ -168,14 +191,17 @@ export default class TileContainer extends Component {
                     })
             })
         if (moved) {
-            grid.addRandomTile();
-            this.renderHandle();
+            setTimeout(() => {
+                grid.addRandomTile();
+                this.renderHandle();
+            }, 100);
         }
     }
     restart = () => {}
     keepPlaying = () => {}
     renderHandle = () => {
         this.setState((prevState, props) => {
+            this.tiles = {};
             const Tiles = [];
             prevState
                 .grid
@@ -186,7 +212,12 @@ export default class TileContainer extends Component {
                                 inner={tile.value}
                                 x={tile.x}
                                 y={tile.y}
-                                key={`${tile.x + 1}-${tile.y + 1}`}></Tile>
+                                new={!tile.prevPosition && !tile.mergedFrom}
+                                merged={!!tile.mergedFrom}
+                                tileRef={t => {
+                                this.tiles[`${x}-${y}`] = t;
+                            }}
+                                key={Math.floor(Math.random() * 100000000000000).toString(16)}></Tile>
                         )
                 });
             return {Tiles};

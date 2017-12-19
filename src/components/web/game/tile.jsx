@@ -5,7 +5,12 @@ export default class Tile extends Component {
         const props = this.props;
         return (
             <div
-                className={`tile tile-${props.inner} tile-position-${props.x + 1}-${props.y + 1} tile-new`}>
+                className={`tile tile-${props.inner} tile-position-${props.x + 1}-${props.y + 1} ${props.new
+                ? 'tile-new'
+                : (props.merged
+                    ? 'tile-merged'
+                    : '')}`}
+                ref={props.tileRef}>
                 <div className="tile-inner">{props.inner}</div>
             </div>
         )
