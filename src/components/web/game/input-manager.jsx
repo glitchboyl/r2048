@@ -1,8 +1,9 @@
 class inputManager {
     constructor() {
         this.events = {};
+
     }
-    listen() {
+    listen = () => {
         const map = {
             37: 3, // left
             38: 0, // up
@@ -28,23 +29,25 @@ class inputManager {
             }
         })
     }
-    on(event, callback) {
+    on = (event, callback) => {
         if (!this.events[event]) 
             this.events[event] = [];
         this
             .events[event]
             .push(callback);
     }
-    emit(event, data) {
+    emit = (event, data) => {
         if (this.events[event]) 
             this.events[event].forEach(callback => {
                 callback(data);
             });
         }
-    restart() {
+    restart = (e) => {
+        e.preventDefault();
         this.emit('restart');
     }
-    keepPlaying() {
+    keepPlaying = (e) => {
+        e.preventDefault();
         this.emit('keepPlaying');
     }
 }

@@ -223,33 +223,6 @@ hr {
     }
 }
 
-@-webkit-keyframes slide-up {
-    0% {
-        margin-top: 32%;
-    }
-    100% {
-        margin-top: 20%;
-    }
-}
-
-@-moz-keyframes slide-up {
-    0% {
-        margin-top: 32%;
-    }
-    100% {
-        margin-top: 20%;
-    }
-}
-
-@keyframes slide-up {
-    0% {
-        margin-top: 32%;
-    }
-    100% {
-        margin-top: 20%;
-    }
-}
-
 .game-container {
     margin-top: 40px;
     position: relative;
@@ -295,7 +268,7 @@ hr {
     font-weight: bold;
     height: 60px;
     line-height: 60px;
-    margin-top: 222px;
+    margin-top: 20%;
 }
 
 .game-message .lower {
@@ -352,16 +325,6 @@ hr {
 .game-message.game-won,
 .game-message.game-over {
     display: block;
-}
-
-.game-message.game-won p,
-.game-message.game-over p {
-    -webkit-animation: slide-up 1.5s ease-in-out 2500ms;
-    -moz-animation: slide-up 1.5s ease-in-out 2500ms;
-    animation: slide-up 1.5s ease-in-out 2500ms;
-    -webkit-animation-fill-mode: both;
-    -moz-animation-fill-mode: both;
-    animation-fill-mode: both;
 }
 
 .game-message.game-won .mailing-list,
@@ -532,9 +495,9 @@ hr {
 
 .tile {
     position: absolute;
-    -webkit-transition: 100ms ease-in-out;
-    -moz-transition: 100ms ease-in-out;
-    transition: 100ms ease-in-out;
+    -webkit-transition: .1s ease-in-out;
+    -moz-transition: .1s ease-in-out;
+    transition: .1s ease-in-out;
     -webkit-transition-property: -webkit-transform;
     -moz-transition-property: -moz-transform;
     transition-property: transform;
@@ -708,9 +671,9 @@ hr {
 }
 
 .tile-new .tile-inner {
-    -webkit-animation: appear 200ms ease 100ms;
-    -moz-animation: appear 200ms ease 100ms;
-    animation: appear 200ms ease 100ms;
+    -webkit-animation: appear 200ms ease .1s;
+    -moz-animation: appear 200ms ease .1s;
+    animation: appear 200ms ease .1s;
     -webkit-animation-fill-mode: backwards;
     -moz-animation-fill-mode: backwards;
     animation-fill-mode: backwards;
@@ -781,9 +744,9 @@ hr {
 
 .tile-merged .tile-inner {
     z-index: 20;
-    -webkit-animation: pop 200ms ease 100ms;
-    -moz-animation: pop 200ms ease 100ms;
-    animation: pop 200ms ease 100ms;
+    -webkit-animation: pop 200ms ease .1s;
+    -moz-animation: pop 200ms ease .1s;
+    animation: pop 200ms ease .1s;
     -webkit-animation-fill-mode: backwards;
     -moz-animation-fill-mode: backwards;
     animation-fill-mode: backwards;
@@ -961,15 +924,6 @@ hr {
     .game-message.game-won,
     .game-message.game-over {
         display: block;
-    }
-    .game-message.game-won p,
-    .game-message.game-over p {
-        -webkit-animation: slide-up 1.5s ease-in-out 2500ms;
-        -moz-animation: slide-up 1.5s ease-in-out 2500ms;
-        animation: slide-up 1.5s ease-in-out 2500ms;
-        -webkit-animation-fill-mode: both;
-        -moz-animation-fill-mode: both;
-        animation-fill-mode: both;
     }
     .game-message.game-won .mailing-list,
     .game-message.game-over .mailing-list {

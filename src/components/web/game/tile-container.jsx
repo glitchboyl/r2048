@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import Tile from './tile';
 import Grid from './grid';
 import Tiler from './tiler';
-import inputManager from './input-manager';
 import storageManager from './storage-manager';
 
-export default class TileContainer extends Component {
-    constructor() {
-        super();
+class TileContainer extends Component {
+    constructor(props) {
+        super(props);
+        const inputManager = props.inputManager;
         this.state = this.setup();
         this.startRandomTiles(this.state);
         inputManager.on('move', this.move);
@@ -133,71 +134,82 @@ export default class TileContainer extends Component {
             y: tileTwo.y
         }, tileOne.value * 2);
         merged.mergedFrom = [tileOne, tileTwo];
-        this
-            .tiles[`${tileOne.x}-${tileOne.y}`]
-            .classList
-            .remove(`tile-position-${tileOne.x + 1}-${tileOne.y + 1}`);
-        this
-            .tiles[`${tileOne.x}-${tileOne.y}`]
-            .classList
-            .add(`tile-position-${merged.x + 1}-${merged.y + 1}`);
+        if (this.tiles[`${tileOne.x}-${tileOne.y}`]) {
+            this
+                .tiles[`${tileOne.x}-${tileOne.y}`]
+                .classList
+                .remove(`tile-position-${tileOne.x + 1}-${tileOne.y + 1}`);
+            this
+                .tiles[`${tileOne.x}-${tileOne.y}`]
+                .classList
+                .add(`tile-position-${merged.x + 1}-${merged.y + 1}`);
+        }
         grid.insertTile(merged);
         grid.removeTile(tileOne);
         tileOne.updatePosition({x: tileTwo.x, y: tileTwo.y});
     }
     moveTile = (tile, cell) => {
         const {grid} = this.state;
-        this
-            .tiles[`${tile.x}-${tile.y}`]
-            .classList
-            .remove(`tile-position-${tile.x + 1}-${tile.y + 1}`);
-        this
-            .tiles[`${tile.x}-${tile.y}`]
-            .classList
-            .add(`tile-position-${cell.x + 1}-${cell.y + 1}`);
+        if (this.tiles[`${tile.x}-${tile.y}`]) {
+            this
+                .tiles[`${tile.x}-${tile.y}`]
+                .classList
+                .remove(`tile-position-${tile.x + 1}-${tile.y + 1}`);
+            this
+                .tiles[`${tile.x}-${tile.y}`]
+                .classList
+                .add(`tile-position-${cell.x + 1}-${cell.y + 1}`);
+        }
         grid.cells[tile.x][tile.y] = null;
         grid.cells[cell.x][cell.y] = tile;
         tile.updatePosition(cell);
     }
     move = (direction) => {
-        const {grid} = this.state;
-        const vector = this.getVector(direction);
-        const traversals = this.buildTraversals(vector);
-        let moved = false;
-        this.prepareTiles();
-        traversals
-            .x
-            .forEach(x => {
-                traversals
-                    .y
-                    .forEach(y => {
-                        let cell = {
-                            x,
-                            y
-                        };
-                        const tile = grid.cellContent(cell);
-                        if (tile) {
-                            const positions = this.findFarthestPosition(cell, vector);
-                            const next = grid.cellContent(positions.next);
-                            if (next && next.value === tile.value && !next.mergedFrom) {
-                                this.mergeTiles(tile, next);
-                            } else {
-                                this.moveTile(tile, positions.farthest);
-                            }
-                            if (!this.positionsEqual(cell, tile)) {
-                                moved = true;
-                            }
-                        }
-                    })
-            })
-        if (moved) {
-            setTimeout(() => {
-                grid.addRandomTile();
-                this.renderHandle();
-            }, 100);
-        }
+        setTimeout(() => {
+            const {grid} = this.state;
+            const vector = this.getVector(direction);
+            const traversals = this.buildTraversals(vector);
+            let moved = false;
+            this.prepareTiles();
+            traversals
+                .x
+                .forEach(x => {
+                    traversals
+                        .y
+                        .forEach(y => {
+                            let cell = {
+                                x,
+                                y
+                            };
+                            const tile = grid.cellContent(cell);
+                            if (tile) {
+                                const positions = this.findFarthestPosition(cell, vector);
+                                const next = grid.cellContent(positions.next);
+                                if (next && next.value === tile.value && !next.mergedFrom) 
+                                    this.mergeTiles(tile, next);
+                                else 
+                                    this.moveTile(tile, positions.farthest);
+                                if (!this.positionsEqual(cell, tile)) 
+                                    moved = true;
+                                }
+                            })
+                })
+            if (moved) 
+                setTimeout(() => {
+                    grid.addRandomTile();
+                    this.renderHandle();
+                }, 100);
+            }
+        , 100);
     }
-    restart = () => {}
+    restart = () => {
+        storageManager.clearGameState();
+        this.setState(this.setup());
+        setTimeout(() => {
+            this.startRandomTiles(this.state);
+            this.renderHandle();
+        }, 1);
+    }
     keepPlaying = () => {}
     renderHandle = () => {
         this.setState((prevState, props) => {
@@ -234,3 +246,7 @@ export default class TileContainer extends Component {
         )
     }
 }
+
+export default connect(({inputManager}) => {
+    return {inputManager};
+})(TileContainer);
