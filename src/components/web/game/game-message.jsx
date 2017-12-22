@@ -26,4 +26,4 @@ class GameMessage extends Component {
 }
 export default connect(({inputManager}) => {
     return {inputManager};
-})(GameMessage);
+}, {})(GameMessage);

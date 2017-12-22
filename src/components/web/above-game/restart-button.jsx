@@ -12,4 +12,4 @@ class RestartButton extends Component {
 
 export default connect(({inputManager}) => {
     return {inputManager};
-})(RestartButton);
+}, {})(RestartButton);

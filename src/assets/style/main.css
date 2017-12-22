@@ -150,6 +150,7 @@ h1.title {
     line-height: 25px;
     font-weight: bold;
     color: rgba(119, 110, 101, 0.9);
+    opacity: 0;
     z-index: 100;
     -webkit-animation: move-up 600ms ease-in;
     -moz-animation: move-up 600ms ease-in;

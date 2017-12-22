@@ -10,7 +10,6 @@ class TileContainer extends Component {
         super(props);
         const inputManager = props.inputManager;
         this.state = this.setup();
-        this.startRandomTiles(this.state);
         inputManager.on('move', this.move);
         inputManager.on('restart', this.restart);
         inputManager.on('keepPlaying', this.keepPlaying);
@@ -18,15 +17,28 @@ class TileContainer extends Component {
     }
     setup = () => {
         const prevState = storageManager.getGameState();
-        const size = prevState
-            ? prevState.grid.size
-            : 4;
-        const grid = prevState
-            ? new Grid(size, prevState.grid.cells)
-            : new Grid(size);
-        return {size, grid, startTiles: 2, Tiles: null}
+        let size,
+            grid;
+        const startTiles = 2;
+        const Tiles = null;
+        if (prevState) {
+            size = prevState.grid.size;
+            grid = new Grid(size, prevState.grid.cells);
+            this
+                .props
+                .ADDITION(prevState.score);
+        } else {
+            size = 4;
+            grid = new Grid(size);
+            this.startRandomTiles(2, grid);
+            storageManager.setGameState({
+                grid: grid.serialize(),
+                score: 0
+            });
+        }
+        return {size, grid, startTiles, Tiles};
     }
-    startRandomTiles = ({startTiles, grid}) => {
+    startRandomTiles = (startTiles, grid) => {
         for (let i = 0; i < startTiles; i++) {
             grid.addRandomTile();
         }
@@ -146,6 +158,9 @@ class TileContainer extends Component {
         }
         grid.insertTile(merged);
         grid.removeTile(tileOne);
+        this
+            .props
+            .SCORE(merged.value);
         tileOne.updatePosition({x: tileTwo.x, y: tileTwo.y});
     }
     moveTile = (tile, cell) => {
@@ -170,7 +185,11 @@ class TileContainer extends Component {
             const vector = this.getVector(direction);
             const traversals = this.buildTraversals(vector);
             let moved = false;
+            const scored = this.props.score;
             this.prepareTiles();
+            this
+                .props
+                .ADDITION_OUT();
             traversals
                 .x
                 .forEach(x => {
@@ -194,19 +213,33 @@ class TileContainer extends Component {
                                 }
                             })
                 })
-            if (moved) 
+            if (moved) {
+                const {score, bestScore, BEST_SCORE, ADDITION} = this.props;
+                if (scored !== score) {
+                    ADDITION(score - scored);
+                    if (score > bestScore) {
+                        BEST_SCORE(score);
+                        storageManager.setBestScore(score);
+                    }
+                }
                 setTimeout(() => {
                     grid.addRandomTile();
+                    storageManager.setGameState({
+                        score,
+                        grid: grid.serialize()
+                    });
                     this.renderHandle();
                 }, 100);
             }
-        , 100);
+        }, 100);
     }
     restart = () => {
         storageManager.clearGameState();
         this.setState(this.setup());
+        this
+            .props
+            .RESET_SCORE();
         setTimeout(() => {
-            this.startRandomTiles(this.state);
             this.renderHandle();
         }, 1);
     }
@@ -247,6 +280,24 @@ class TileContainer extends Component {
     }
 }
 
-export default connect(({inputManager}) => {
-    return {inputManager};
+export default connect(({score, bestScore, inputManager}) => {
+    return {score, bestScore, inputManager};
+}, (dispatch) => {
+    return {
+        SCORE: (score) => {
+            dispatch({type: 'score', score});
+        },
+        RESET_SCORE: () => {
+            dispatch({type: 'reset-score'});
+        },
+        BEST_SCORE: (score) => {
+            dispatch({type: 'best-score', score});
+        },
+        ADDITION: (addition) => {
+            dispatch({type: 'addition', addition});
+        },
+        ADDITION_OUT: () => {
+            dispatch({type: 'addition-out'});
+        }
+    };
 })(TileContainer);
