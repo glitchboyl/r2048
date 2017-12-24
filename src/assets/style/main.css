@@ -786,12 +786,10 @@ hr {
 
 .sharing {
     margin-top: 20px;
-    text-align: center;
 }
 
 .sharing>iframe,
-.sharing>span,
-.sharing>form {
+.sharing>span {
     display: inline-block;
     vertical-align: middle;
 }
@@ -1127,7 +1125,7 @@ hr {
     margin-right: 8px;
 }
 
-.btc-donate {
+.btn {
     position: relative;
     margin-left: 10px;
     display: inline-block;
@@ -1141,79 +1139,20 @@ hr {
     cursor: pointer;
 }
 
-.btc-donate img {
+.btn img {
     vertical-align: -4px;
     margin-right: 8px;
 }
 
-.btc-donate a {
+.btn a {
     color: #f9f6f2;
     text-decoration: none;
     font-weight: normal;
 }
 
-.btc-donate .address {
-    cursor: auto;
-    position: absolute;
-    width: 340px;
-    right: 50%;
-    margin-right: -170px;
-    padding-bottom: 7px;
-    top: -30px;
-    opacity: 0;
-    pointer-events: none;
-    -webkit-transition: 400ms ease;
-    -moz-transition: 400ms ease;
-    transition: 400ms ease;
-    -webkit-transition-property: top, opacity;
-    -moz-transition-property: top, opacity;
-    transition-property: top, opacity;
-}
-
-.btc-donate .address:after {
-    position: absolute;
-    border-top: 10px solid #bbada0;
-    border-right: 7px solid transparent;
-    border-left: 7px solid transparent;
-    content: "";
-    bottom: 0px;
-    left: 50%;
-    margin-left: -7px;
-}
-
-.btc-donate .address code {
-    background-color: #bbada0;
-    padding: 10px 15px;
-    width: 100%;
-    border-radius: 3px;
-    line-height: 1;
-    font-weight: normal;
-    font-size: 15px;
-    font-family: Consolas, "Liberation Mono", Courier, monospace;
-    text-align: center;
-}
-
-.btc-donate:hover .address,
-.btc-donate .address:hover .address {
-    opacity: 1;
-    top: -45px;
-    pointer-events: auto;
-}
-
 @media screen and (max-width: 520px) {
-    .btc-donate {
+    .btn {
         width: 120px;
-    }
-    .btc-donate .address {
-        margin-right: -150px;
-        width: 300px;
-    }
-    .btc-donate .address code {
-        font-size: 13px;
-    }
-    .btc-donate .address:after {
-        left: 50%;
-        bottom: 2px;
     }
 }
 

@@ -4,20 +4,19 @@ export default class Sharing extends Component {
     render() {
         return (
             <div className="sharing">
-                {/* <form className="pp-donate" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-              <input type="hidden" name="cmd" value="_s-xclick">
-              <input type="hidden" name="hosted_button_id" value="NVNPJLTBZ8AME">
-              <button name="submit"><img src="meta/icon_pp.svg">Donate</button>
-              <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-            </form>
-
-            <span className="btc-donate">
-              <a href="bitcoin:1Ec6onfsQmoP9kkL3zkpB6c5sA4PVcXU2i">
-                <img src="meta/icon_bitcoin.svg">Donate BTC
-              </a>
-              <span className="address"><code>1Ec6onfsQmoP9kkL3zkpB6c5sA4PVcXU2i</code></span>
-            </span>
-       */}
+                If you like it, please give me a <iframe
+                    src="https://ghbtns.com/github-btn.html?user=LonelyLiaR&amp;repo=R2048&amp;type=star&amp;count=false"
+                    title='star'
+                    frameBorder="0"
+                    scrolling="0"
+                    width="55px"
+                    height="20px"></iframe> or you can <iframe
+                    src="https://ghbtns.com/github-btn.html?user=LonelyLiaR&amp;repo=R2048&amp;type=fork&amp;count=false"
+                    title='fork'
+                    frameBorder="0"
+                    scrolling="0"
+                    width="55px"
+                    height="20px"></iframe> it.
             </div>
         )
     }
