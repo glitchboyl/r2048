@@ -6,24 +6,24 @@ class GameMessage extends Component {
         const {over, won, keepPlaying, inputManager} = this.props;
         return (
             <div
-                className={`game-message ${won
+                className={`game-message ${won && !keepPlaying
                 ? 'game-won'
                 : (over
                     ? 'game-over'
                     : '')}`}>
-                <p>{won
+                <p>{won && !keepPlaying
                         ? 'You win!'
                         : (over
                             ? 'Game over!'
                             : '')}</p>
                 <div className="lower">
-                    <a className="keep-playing-button">Keep going</a>
-                    <a className="retry-button">Try again</a>
+                    <a className="keep-playing-button" onClick={inputManager.keepPlaying}>Keep going</a>
+                    <a className="retry-button" onClick={inputManager.restart}>Try again</a>
                 </div>
             </div>
         )
     }
 }
-export default connect(({inputManager}) => {
-    return {inputManager};
+export default connect(({over, won, keepPlaying, inputManager}) => {
+    return {over, won, keepPlaying, inputManager};
 }, {})(GameMessage);

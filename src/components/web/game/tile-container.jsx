@@ -21,19 +21,31 @@ class TileContainer extends Component {
             grid;
         const startTiles = 2;
         const Tiles = null;
+        const {ADDITION, GAME_OVER, GAME_WON, KEEP_PLAYING_GAME} = this.props;
         if (prevState) {
             size = prevState.grid.size;
             grid = new Grid(size, prevState.grid.cells);
-            this
-                .props
-                .ADDITION(prevState.score);
-        } else {
+            if (prevState.score) 
+                ADDITION(prevState.score);
+            }
+        else {
+            const {
+                over = false,
+                won = false,
+                keepPlaying = false
+            } = {};
             size = 4;
             grid = new Grid(size);
             this.startRandomTiles(2, grid);
+            GAME_OVER(over);
+            GAME_WON(won);
+            KEEP_PLAYING_GAME(keepPlaying);
             storageManager.setGameState({
                 grid: grid.serialize(),
-                score: 0
+                score: 0,
+                over,
+                won,
+                keepPlaying
             });
         }
         return {size, grid, startTiles, Tiles};
@@ -137,9 +149,10 @@ class TileContainer extends Component {
             .state
             .grid
             .availableCells()
-            .lengths || this.tileMatchesAvailable();
+            .length || this.tileMatchesAvailable();
     }
     mergeTiles = (tileOne, tileTwo) => {
+        const {won, SCORE, GAME_OVER, GAME_WON} = this.props;
         const {grid} = this.state;
         const merged = new Tiler({
             x: tileTwo.x,
@@ -158,10 +171,12 @@ class TileContainer extends Component {
         }
         grid.insertTile(merged);
         grid.removeTile(tileOne);
-        this
-            .props
-            .SCORE(merged.value);
+        SCORE(merged.value);
         tileOne.updatePosition({x: tileTwo.x, y: tileTwo.y});
+        if (!won && merged.value === 2048) {
+            GAME_WON(true);
+            GAME_OVER(true);
+        }
     }
     moveTile = (tile, cell) => {
         const {grid} = this.state;
@@ -180,59 +195,69 @@ class TileContainer extends Component {
         tile.updatePosition(cell);
     }
     move = (direction) => {
-        setTimeout(() => {
-            const {grid} = this.state;
-            const vector = this.getVector(direction);
-            const traversals = this.buildTraversals(vector);
-            let moved = false;
-            const scored = this.props.score;
-            this.prepareTiles();
-            this
-                .props
-                .ADDITION_OUT();
-            traversals
-                .x
-                .forEach(x => {
-                    traversals
-                        .y
-                        .forEach(y => {
-                            let cell = {
-                                x,
-                                y
-                            };
-                            const tile = grid.cellContent(cell);
-                            if (tile) {
-                                const positions = this.findFarthestPosition(cell, vector);
-                                const next = grid.cellContent(positions.next);
-                                if (next && next.value === tile.value && !next.mergedFrom) 
-                                    this.mergeTiles(tile, next);
-                                else 
-                                    this.moveTile(tile, positions.farthest);
-                                if (!this.positionsEqual(cell, tile)) 
-                                    moved = true;
-                                }
-                            })
-                })
-            if (moved) {
-                const {score, bestScore, BEST_SCORE, ADDITION} = this.props;
-                if (scored !== score) {
-                    ADDITION(score - scored);
-                    if (score > bestScore) {
-                        BEST_SCORE(score);
-                        storageManager.setBestScore(score);
+        let {over, won, keepPlaying} = this.props;
+        const {ADDITION_OUT, GAME_OVER} = this.props;
+        if (!over || (over && won && keepPlaying)) 
+            setTimeout(() => {
+                const {grid} = this.state;
+                const vector = this.getVector(direction);
+                const traversals = this.buildTraversals(vector);
+                let moved = false;
+                const scored = this.props.score;
+                this.prepareTiles();
+                ADDITION_OUT();
+                traversals
+                    .x
+                    .forEach(x => {
+                        traversals
+                            .y
+                            .forEach(y => {
+                                let cell = {
+                                    x,
+                                    y
+                                };
+                                const tile = grid.cellContent(cell);
+                                if (tile) {
+                                    const positions = this.findFarthestPosition(cell, vector);
+                                    const next = grid.cellContent(positions.next);
+                                    if (next && next.value === tile.value && !next.mergedFrom) 
+                                        this.mergeTiles(tile, next);
+                                    else 
+                                        this.moveTile(tile, positions.farthest);
+                                    if (!this.positionsEqual(cell, tile)) 
+                                        moved = true;
+                                    }
+                                })
+                    })
+                if (moved) {
+                    const {score, bestScore, BEST_SCORE, ADDITION} = this.props;
+                    if (scored !== score) {
+                        ADDITION(score - scored);
+                        if (score > bestScore) {
+                            BEST_SCORE(score);
+                            storageManager.setBestScore(score);
+                        }
                     }
+                    setTimeout(() => {
+                        grid.addRandomTile();
+                        this.renderHandle();
+                        if (!this.movesAvailable()) {
+                            GAME_OVER(true);
+                            storageManager.clearGameState();
+                        } else {
+                            ({over, won, keepPlaying} = this.props);
+                            storageManager.setGameState({
+                                grid: grid.serialize(),
+                                score,
+                                over,
+                                won,
+                                keepPlaying
+                            });
+                        }
+                    }, 100);
                 }
-                setTimeout(() => {
-                    grid.addRandomTile();
-                    storageManager.setGameState({
-                        score,
-                        grid: grid.serialize()
-                    });
-                    this.renderHandle();
-                }, 100);
-            }
-        }, 100);
-    }
+            }, 100);
+        }
     restart = () => {
         storageManager.clearGameState();
         this.setState(this.setup());
@@ -243,7 +268,20 @@ class TileContainer extends Component {
             this.renderHandle();
         }, 1);
     }
-    keepPlaying = () => {}
+    keepPlaying = () => {
+        const {GAME_OVER, KEEP_PLAYING_GAME} = this.props;
+        GAME_OVER(false);
+        KEEP_PLAYING_GAME(true);
+        const {score, won} = this.props;
+        const {grid} = this.state;
+        storageManager.setGameState({
+            grid: grid.serialize(),
+            score,
+            over: false,
+            won,
+            keepPlaying: true
+        });
+    }
     renderHandle = () => {
         this.setState((prevState, props) => {
             this.tiles = {};
@@ -280,8 +318,22 @@ class TileContainer extends Component {
     }
 }
 
-export default connect(({score, bestScore, inputManager}) => {
-    return {score, bestScore, inputManager};
+export default connect(({
+    score,
+    bestScore,
+    over,
+    won,
+    keepPlaying,
+    inputManager
+}) => {
+    return {
+        score,
+        bestScore,
+        over,
+        won,
+        keepPlaying,
+        inputManager
+    };
 }, (dispatch) => {
     return {
         SCORE: (score) => {
@@ -298,6 +350,15 @@ export default connect(({score, bestScore, inputManager}) => {
         },
         ADDITION_OUT: () => {
             dispatch({type: 'addition-out'});
+        },
+        GAME_OVER: (over) => {
+            dispatch({type: 'game-over', over});
+        },
+        GAME_WON: (won) => {
+            dispatch({type: 'game-won', won});
+        },
+        KEEP_PLAYING_GAME: (keepPlaying) => {
+            dispatch({type: 'keep-playing-game', keepPlaying});
         }
     };
 })(TileContainer);
