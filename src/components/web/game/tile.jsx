@@ -2,16 +2,23 @@ import React, {Component} from 'react';
 
 export default class Tile extends Component {
     render() {
-        const props = this.props;
+        const {
+            x,
+            y,
+            inner,
+            fresh,
+            merged,
+            tileRef
+        } = this.props;
         return (
             <div
-                className={`tile tile-${props.inner} tile-position-${props.x + 1}-${props.y + 1} ${props.new
+                className={`tile tile-${inner} tile-position-${x + 1}-${y + 1} ${fresh
                 ? 'tile-new'
-                : (props.merged
+                : (merged
                     ? 'tile-merged'
                     : '')}`}
-                ref={props.tileRef}>
-                <div className="tile-inner">{props.inner}</div>
+                ref={tileRef}>
+                <div className="tile-inner">{inner}</div>
             </div>
         )
     }

@@ -6,9 +6,9 @@ import GameMessage from './game-message';
 export default class Game extends Component {
     render() {
         return (
-            <div className="game-container">
+            <div className="game-container" ref={this.props.gameRef}>
                 <Gridiron></Gridiron>
-                <TileContainer></TileContainer>
+                <TileContainer gameContainer={this.props.gameContainer}></TileContainer>
                 <GameMessage></GameMessage>
             </div>
         )

@@ -806,6 +806,8 @@ hr {
     h1.title {
         font-size: 27px;
         margin-top: 15px;
+        margin-bottom: 5px;
+        line-height: initial;
     }
     .container {
         width: 280px;
@@ -1092,13 +1094,6 @@ hr {
     }
     .game-message .mailing-list .mailing-list-email-field {
         width: 180px;
-    }
-    .sharing>iframe,
-    .sharing>span,
-    .sharing>form {
-        display: block;
-        margin: 0 auto;
-        margin-bottom: 20px;
     }
 }
 

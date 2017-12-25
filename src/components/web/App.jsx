@@ -7,12 +7,15 @@ import Note from './note';
 import Sharing from './sharing';
 
 export default class App extends Component {
+  gameContainer = () => {
+    return this.gameRef;
+  }
   render() {
     return (
       <div className="container">
         <Heading/>
         <AboveGame/>
-        <Game/>
+        <Game gameRef={game => this.gameRef = game} gameContainer={this.gameContainer}/>
         <Explanation/>
         <hr/>
         <Note/>

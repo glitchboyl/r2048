@@ -10,10 +10,12 @@ class TileContainer extends Component {
         super(props);
         const inputManager = props.inputManager;
         this.state = this.setup();
-        inputManager.on('move', this.move);
-        inputManager.on('restart', this.restart);
-        inputManager.on('keepPlaying', this.keepPlaying);
-        inputManager.listen();
+        setTimeout(() => {
+            inputManager.on('move', this.move);
+            inputManager.on('restart', this.restart);
+            inputManager.on('keepPlaying', this.keepPlaying);
+            inputManager.listen(props.gameContainer());
+        }, 1);
     }
     setup = () => {
         const prevState = storageManager.getGameState();
@@ -270,17 +272,18 @@ class TileContainer extends Component {
     }
     keepPlaying = () => {
         const {GAME_OVER, KEEP_PLAYING_GAME} = this.props;
-        GAME_OVER(false);
-        KEEP_PLAYING_GAME(true);
+        const {
+            over = false,
+            keepPlaying = true
+        } = {};
+        GAME_OVER(over);
+        KEEP_PLAYING_GAME(keepPlaying);
         const {score, won} = this.props;
-        const {grid} = this.state;
-        storageManager.setGameState({
-            grid: grid.serialize(),
-            score,
-            over: false,
-            won,
-            keepPlaying: true
-        });
+        const grid = this
+            .state
+            .grid
+            .serialize();
+        storageManager.setGameState({grid, score, over, won, keepPlaying});
     }
     renderHandle = () => {
         this.setState((prevState, props) => {
@@ -295,11 +298,9 @@ class TileContainer extends Component {
                                 inner={tile.value}
                                 x={tile.x}
                                 y={tile.y}
-                                new={!tile.prevPosition && !tile.mergedFrom}
+                                fresh={!tile.prevPosition && !tile.mergedFrom}
                                 merged={!!tile.mergedFrom}
-                                tileRef={t => {
-                                this.tiles[`${x}-${y}`] = t;
-                            }}
+                                tileRef={t => this.tiles[`${x}-${y}`] = t}
                                 key={Math.floor(Math.random() * 100000000000000).toString(16)}></Tile>
                         )
                 });
