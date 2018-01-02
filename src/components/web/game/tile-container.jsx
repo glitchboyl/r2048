@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import Tile from './tile';
-import Grid from './grid';
-import Tiler from './tiler';
+import Grid from './../../../unit/grid';
+import Tiler from './../../../unit/tiler';
 import storageManager from './storage-manager';
 
 class TileContainer extends Component {
@@ -38,7 +38,7 @@ class TileContainer extends Component {
             } = {};
             size = 4;
             grid = new Grid(size);
-            this.startRandomTiles(2, grid);
+            this.startRandomTiles(startTiles, grid);
             GAME_OVER(over);
             GAME_WON(won);
             KEEP_PLAYING_GAME(keepPlaying);
