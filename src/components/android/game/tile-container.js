@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Dimensions, Animated} from 'react-native';
+import {View, Animated} from 'react-native';
 import styles from './../../../assets/style';
 import Tile from './tile';
 import Grid from './../../../unit/grid';
@@ -19,13 +19,9 @@ export default class TileContainer extends Component {
         const grid = new Grid(size);
         const startTiles = 2;
         const Tiles = null;
-        const spacing = Dimensions
-            .get('window')
-            .width > 500
-            ? 121.25
-            : (Dimensions.get('window').width - 50) / 4;
+        const tilePos = {};
         this.startRandomTiles(startTiles, grid);
-        return {size, grid, startTiles, Tiles, spacing};
+        return {size, grid, startTiles, Tiles, tilePos};
     }
     startRandomTiles = (startTiles, grid) => {
         for (let i = 0; i < startTiles; i++) {
@@ -136,7 +132,7 @@ export default class TileContainer extends Component {
             y: tileTwo.y
         }, tileOne.value * 2);
         merged.mergedFrom = [tileOne, tileTwo];
-        if (this.tiles[`${tileOne.x}-${tileOne.y}`]) {
+        if (this.state.tilePos[`${tileOne.x}-${tileOne.y}`]) {
             // this     .tiles[`${tileOne.x}-${tileOne.y}`]     .classList
             // .remove(`tile-position-${tileOne.x + 1}-${tileOne.y + 1}`); this
             // .tiles[`${tileOne.x}-${tileOne.y}`]     .classList
@@ -151,12 +147,10 @@ export default class TileContainer extends Component {
     }
     moveTile = (tile, cell) => {
         const {grid} = this.state;
-        if (this.tiles[`${tile.x}-${tile.y}`]) {
-            // this     .tiles[`${tile.x}-${tile.y}`]     .classList
-            // .remove(`tile-position-${tile.x + 1}-${tile.y + 1}`); this
-            // .tiles[`${tile.x}-${tile.y}`]     .classList     .add(`tile-position-${cell.x
-            // + 1}-${cell.y + 1}`);
-        }
+        // if (this.state.tilePos[`${tile.x}-${tile.y}`]) {
+        // Animated.timing(this.state.tilePos[`${tile.x}-${tile.y}`], {         toValue:
+        // {             x: this.spacing * cell.x,             y: this.spacing * cell.y
+        //       },         duration: 100,         useNativeDriver: true     }) }
         grid.cells[tile.x][tile.y] = null;
         grid.cells[cell.x][cell.y] = tile;
         tile.updatePosition(cell);
@@ -201,10 +195,9 @@ export default class TileContainer extends Component {
                 // BEST_SCORE(score);         storageManager.setBestScore(score);     } }
                 setTimeout(() => {
                     grid.addRandomTile();
-                    this.renderHandle();
-                    // if (!this.movesAvailable()) {     GAME_OVER(true);
-                    // storageManager.clearGameState(); } else {     ({over, won, keepPlaying} =
-                    // this.props);     storageManager.setGameState({         grid:
+                    this.renderHandle(); // if (!this.movesAvailable()) {
+                    // GAME_OVER(true); storageManager.clearGameState(); } else {     ({over, won,
+                    // keepPlaying} = this.props);     storageManager.setGameState({         grid:
                     // grid.serialize(),         score,         over,         won, keepPlaying }); }
                 }, 100);
             }
@@ -220,37 +213,25 @@ export default class TileContainer extends Component {
     }
     renderHandle = () => {
         this.setState((prevState, props) => {
-            this.tiles = {};
+            const tilePos = {};
             const Tiles = [];
             prevState
                 .grid
                 .eachCell((x, y, tile) => {
                     if (tile) {
-                        const X = new Animated.Value(this.state.spacing * x);
-                        const Y = new Animated.Value(this.state.spacing * y);
-                        this.tiles[`${x}-${y}`] = {
-                            x: X,
-                            y: Y
-                        }
                         Tiles.push(
                             <Tile
                                 inner={tile.value}
-                                style={{
-                                transform: [
-                                    {
-                                        translateX: X
-                                    }, {
-                                        translateY: Y
-                                    }
-                                ]
-                            }}
+                                x={x}
+                                y={y}
+                                prevPosition={tile.prevPosition}
                                 fresh={!tile.prevPosition && !tile.mergedFrom}
                                 merged={!!tile.mergedFrom}
                                 key={Math.floor(Math.random() * 100000000000000).toString(16)}></Tile>
                         )
                     }
                 });
-            return {Tiles};
+            return {Tiles, tilePos};
         })
     }
     responderStart = ({nativeEvent}) => {
