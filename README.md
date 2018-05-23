@@ -1,7 +1,7 @@
 # R2048
 A React/React-Native 2048 game.  
 
-[React version preview](https://lonelyliar.github.io/R2048/)
+[React version preview](https://lonelyliar.github.io/r2048/)
 
 ## Build Setup
 
