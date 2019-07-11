@@ -1,7 +1,7 @@
 # R2048
 A React/React-Native 2048 game.  
 
-[React version preview](https://lonelyliar.github.io/r2048/)
+[React version preview](https://glitchboyl.github.io/r2048/)
 
 ## Build Setup
 
@@ -25,5 +25,4 @@ npm run build / yarn run build
 npm run deploy / yarn run deploy
 ```
   
-React-Native version also can play but it still has a lot of bugs.   
-So maybe you can wait for it next time ..?
+(React-Native version also can play but it still has a lot of bugs.) 
