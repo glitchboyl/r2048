@@ -7,7 +7,7 @@ A React/React-Native 2048 game.
 
 ``` bash
 # clone this repo
-git clone https://github.com/LonelyLiaR/R2048
+git clone https://github.com/glitchboyl/R2048
 
 # cd to dir
 cd R2048
